@@ -14,12 +14,12 @@ export const actions: Actions = {
 			const result = await locals.pb.collection('users').authWithPassword(email, password);
 			console.log('Result:', result);
 			// console.log('User:', locals.pb.authStore.record);
-			if (locals.pb.authStore.isValid) {
-				console.log('User is valid:', locals.pb.authStore.isValid);
-				await locals.pb.collection('users').authRefresh();
-			} else {
-				locals.pb.authStore.clear();
-			}
+			// if (locals.pb.authStore.isValid) {
+			// 	console.log('User is valid:', locals.pb.authStore.isValid);
+			// 	await locals.pb.collection('users').authRefresh();
+			// } else {
+			// 	locals.pb.authStore.clear();
+			// }
 		} catch (err) {
 			console.error('Error:', err);
 			return fail(400, {
