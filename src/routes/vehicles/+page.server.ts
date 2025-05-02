@@ -31,10 +31,8 @@ export const load = (async ({ locals }) => {
 	const records = await Promise.all(
 		vehicleList.items.map(async (vehicle) => {
 			// Generate a signed URL (expires in 1 hour)
-			const fileToken = await locals.pbAdmin.files.getToken();
-			const signedUrl = locals.pbAdmin.files.getURL(vehicle, vehicle.featured_image, {
-				token: fileToken
-			});
+			// const fileToken = await locals.pbAdmin.files.getToken();
+			const signedUrl = locals.pbAdmin.files.getURL(vehicle, vehicle.featured_image)
 
 			console.log('signedUrl:', signedUrl);
 			return {
