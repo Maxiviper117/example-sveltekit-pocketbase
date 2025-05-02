@@ -1,4 +1,5 @@
 <script lang="ts">
+	import { dev } from '$app/environment';
 	import { enhance } from '$app/forms';
 
 	let email = $state('example@example.com');
@@ -13,13 +14,16 @@
 		if (form?.success) {
 			setTimeout(() => {
 				register = false;
-                form = null;
+				form = null;
 			}, 3000);
 		}
 	});
 </script>
 
-<Inspect bind:value={form} />
+{#if dev}
+	<!-- content here -->
+	<Inspect bind:value={form} />
+{/if}
 
 <div class="flex min-h-screen items-center justify-center bg-gray-100">
 	<form
@@ -80,12 +84,24 @@
 		{#if !register}
 			<p class="text-center text-sm text-gray-600">
 				Don't have an account?
-				<a class="text-blue-600 hover:underline" onclick={() => (register = true)}>Register</a>
+				<button
+					type="button"
+					class="m-0 cursor-pointer border-none bg-transparent p-0 text-blue-600 hover:underline"
+					onclick={() => (register = true)}
+				>
+					Register
+				</button>
 			</p>
 		{:else}
 			<p class="text-center text-sm text-gray-600">
 				Already have an account?
-				<a class="text-blue-600 hover:underline" onclick={() => (register = false)}>Login</a>
+				<button
+					type="button"
+					class="m-0 cursor-pointer border-none bg-transparent p-0 text-blue-600 hover:underline"
+					onclick={() => (register = false)}
+				>
+					Login
+				</button>
 			</p>
 		{/if}
 	</form>
