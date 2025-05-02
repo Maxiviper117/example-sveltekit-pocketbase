@@ -4,11 +4,18 @@ import type { Handle } from '@sveltejs/kit';
 
 export const pocketbaseHandle: Handle = async ({ event, resolve }) => {
 	const POCKETBASE_URL = process.env.POCKETBASE_URL || 'http://127.0.0.1:8090';
+	const SUPER_ADMIN_EMAIL = process.env.SUPER_ADMIN_EMAIL as string;
+	const SUPER_ADMIN_PASSWORD = process.env.SUPER_ADMIN_PASSWORD as string;
+
 	// Initialize PocketBase client for this request
 	event.locals.pb = new PocketBase(POCKETBASE_URL);
 
+	const pbAdmin = new PocketBase(POCKETBASE_URL);
+	await pbAdmin.collection('_superusers').authWithPassword(SUPER_ADMIN_EMAIL, SUPER_ADMIN_PASSWORD);
+
 	// Load session data from 'pb_auth' cookie, if present
 	event.locals.pb.authStore.loadFromCookie(event.request.headers.get('cookie') || '');
+	event.locals.pbAdmin = pbAdmin; // Assign the admin client to locals for later use
 
 	try {
 		// If a session exists, try to refresh it; on failure clear the auth store
