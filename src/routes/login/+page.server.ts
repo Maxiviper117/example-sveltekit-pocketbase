@@ -1,6 +1,5 @@
-import { sign } from 'crypto';
 import type { Actions } from './$types';
-import { fail, json, redirect } from '@sveltejs/kit';
+import { fail, redirect } from '@sveltejs/kit';
 
 export const actions: Actions = {
 	login: async ({ request, locals }) => {
