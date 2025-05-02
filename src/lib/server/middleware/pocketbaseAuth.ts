@@ -1,50 +1,33 @@
 // src/lib/server/pocketbase.ts
 import PocketBase from 'pocketbase';
-import { getRequestEvent } from '$app/server';
+import type { Handle } from '@sveltejs/kit';
 
-/**
- * A SvelteKit Handle middleware that
- * 1. Instantiates a PocketBase client per request
- * 2. Loads and refreshes the authStore from cookie
- * 3. Persists any changes to authStore back to the response
- *
- * @example
- * export const handle: Handle = async ({ event, resolve }) => {
- *     await pocketbaseMiddleware();
- *
- *     const response = await resolve(event);
- *
- *     (await pocketbaseMiddleware()).setCookie(response);
- *
- *     return response;
- * };
- */
-export const pocketbaseMiddleware = async () => {
+export const pocketbaseHandle: Handle = async ({ event, resolve }) => {
 	const POCKETBASE_URL = process.env.POCKETBASE_URL || 'http://127.0.0.1:8090';
-	const event = getRequestEvent();
-	const { locals, request } = event;
-	// 1. init client
-	locals.pb = new PocketBase(POCKETBASE_URL);
+	// Initialize PocketBase client for this request
+	event.locals.pb = new PocketBase(POCKETBASE_URL);
 
-	// 2. load from cookie
-	const cookieHeader = request.headers.get('cookie') || '';
-	locals.pb.authStore.loadFromCookie(cookieHeader);
+	// Load session data from 'pb_auth' cookie, if present
+	event.locals.pb.authStore.loadFromCookie(event.request.headers.get('cookie') || '');
 
-	// 3. try refresh or clear
-	if (locals.pb.authStore.isValid) {
-		try {
-			await locals.pb.collection('users').authRefresh();
-		} catch {
-			locals.pb.authStore.clear();
+	try {
+		// If a session exists, try to refresh it; on failure clear the auth store
+		if (event.locals.pb.authStore.isValid) {
+			await event.locals.pb.collection('users').authRefresh();
 		}
+		// eslint-disable-next-line @typescript-eslint/no-unused-vars
+	} catch (_) {
+		// clear the auth store on failed refresh
+		event.locals.pb.authStore.clear();
 	}
 
-	// 5. write back Set‑Cookie
-	const pbCookie = locals.pb.authStore.exportToCookie();
+	// Resolve runs route logic and actions, e.g., login, which may mutate authStore
+	const response = await resolve(event);
 
-	return {
-		setCookie: (response: Response) => {
-			response.headers.append('set-cookie', pbCookie);
-		}
-	};
+	// Export updated authStore into a Set-Cookie header ('pb_auth') for the client
+	const pb_auth = event.locals.pb.authStore.exportToCookie(); // if logging in, this will be populated with the auth token and user data
+	// console.log('pb_auth:', pb_auth);
+	response.headers.append('set-cookie', pb_auth); // instructs the browser to store the cookie
+
+	return response;
 };
