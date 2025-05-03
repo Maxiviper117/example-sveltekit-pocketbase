@@ -8,7 +8,7 @@ declare global {
 	namespace App {
 		// interface Error {}
 		interface Locals {
-			pb: TypedPocketBase;
+			pbUser: TypedPocketBase;
 			pbAdmin: TypedPocketBase;
 			user: import('pocketbase').Record | null;
 		}
