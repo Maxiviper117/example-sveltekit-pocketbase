@@ -1,0 +1,20 @@
+# :80 {
+#     reverse_proxy pocketbase:8090 {
+#         header_up X-Forwarded-For {remote_host} # required for pocketbase to get the real IP address
+#     }
+# }
+
+:80 {
+    handle /api/* {
+        reverse_proxy pocketbase:8090 {
+            header_up X-Forwarded-For {remote_host}
+        }
+    }
+
+    # optionally proxy the dashboard too
+    handle /_/* {
+        reverse_proxy pocketbase:8090 {
+            header_up X-Forwarded-For {remote_host}
+        }
+    }
+}
