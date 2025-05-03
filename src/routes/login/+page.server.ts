@@ -11,14 +11,14 @@ export const actions: Actions = {
 		console.log('Password:', password);
 
 		try {
-			const result = await locals.pb.collection('users').authWithPassword(email, password);
+			const result = await locals.pbUser.collection('users').authWithPassword(email, password);
 			console.log('Result:', result);
-			// console.log('User:', locals.pb.authStore.record);
-			// if (locals.pb.authStore.isValid) {
-			// 	console.log('User is valid:', locals.pb.authStore.isValid);
-			// 	await locals.pb.collection('users').authRefresh();
+			// console.log('User:', locals.pbUser.authStore.record);
+			// if (locals.pbUser.authStore.isValid) {
+			// 	console.log('User is valid:', locals.pbUser.authStore.isValid);
+			// 	await locals.pbUser.collection('users').authRefresh();
 			// } else {
-			// 	locals.pb.authStore.clear();
+			// 	locals.pbUser.authStore.clear();
 			// }
 		} catch (err) {
 			console.error('Error:', err);
@@ -44,7 +44,7 @@ export const actions: Actions = {
 
 		// create a new user
 		try {
-			// const user = await locals.pb.collection('users').create({
+			// const user = await locals.pbUser.collection('users').create({
 			// 	email,
 			// 	password,
 			// 	passwordConfirm

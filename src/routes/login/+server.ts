@@ -3,10 +3,10 @@ import type { RequestHandler } from './$types';
 export const POST: RequestHandler = async ({ request, locals }) => {
 	const { email, password } = await request.json();
 
-	const { token, record } = await locals.pb.collection('users').authWithPassword(email, password);
+	const { token, record } = await locals.pbUser.collection('users').authWithPassword(email, password);
 
 	// Export the auth cookie after login
-	const pbAuthCookie = locals.pb.authStore.exportToCookie();
+	const pbAuthCookie = locals.pbUser.authStore.exportToCookie();
 
 	return new Response(
 		JSON.stringify({
