@@ -8,7 +8,7 @@ export const load = (async () => {
 
 export const actions: Actions = {
 	default: async ({ locals }) => {
-		locals.pb.authStore.clear();
+		locals.pbUser.authStore.clear();
 
 		throw redirect(303, '/login');
 	}
